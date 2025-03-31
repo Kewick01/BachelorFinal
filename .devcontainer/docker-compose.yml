@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+ backend:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    platform: linux/amd64
+    volumes:
+      - .:/workspaces:cached
+    network_mode: service:azurite
+    ports:
+    - "5000:5000"
+    environment: 
+     FLASK_ENV: development
+    command: ["python", "/app/app.py"] 
+
+frontend:
+      build: 
+       context: .
+       dockerfile: .devcontainer/Dockerfile
+      volumes:
+      - ./frontend:/workspace/frontend
+      working_dir: /workspace/frontend
+      command: ["npx", "react-native", "start"]
+      ports:
+      - "8081:8081"
+
+
+
+azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
